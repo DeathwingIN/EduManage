@@ -1,8 +1,11 @@
 package com.deathWingIN.edumanage.controller;
 
+import com.deathWingIN.edumanage.db.Database;
+import com.deathWingIN.edumanage.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -21,6 +24,26 @@ public class LoginFormController {
     }
 
     public void loginOnAction(ActionEvent actionEvent) {
+        String email = txtEmail.getText().trim().toLowerCase();
+        String password = txtPassword.getText().trim();
+        boolean emailFound = false;
+
+        for (User user : Database.UserTable) {
+            if (user.getEmail().equals(email)) {
+                emailFound = true;
+                if (user.getPassword().equals(password)) {
+                    System.out.println(user.toString());
+                    break; // Exit the loop as soon as a match is found
+                } else {
+                    new Alert(Alert.AlertType.WARNING, "Wrong Password").show();
+                    return; // Exit the method if the password is wrong
+                }
+            }
+        }
+
+        if (!emailFound) {
+            new Alert(Alert.AlertType.WARNING, "User Not Found").show();
+        }
     }
 
     public void createAnAccountOnAction(ActionEvent actionEvent) throws IOException {
