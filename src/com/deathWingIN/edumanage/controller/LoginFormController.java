@@ -24,7 +24,7 @@ public class LoginFormController {
     public void forgotPasswordOnAction(ActionEvent actionEvent) {
     }
 
-    public void loginOnAction(ActionEvent actionEvent) {
+    public void loginOnAction(ActionEvent actionEvent) throws IOException {
         String email = txtEmail.getText().trim().toLowerCase();
         String password = txtPassword.getText().trim();
         boolean emailFound = false;
@@ -33,7 +33,7 @@ public class LoginFormController {
             if (user.getEmail().equals(email)) {
                 emailFound = true;
                 if (new PasswordManager().checkPassword(password, user.getPassword())) {
-                    System.out.println(user.toString());
+                    setUI("DashboardForm");
                     break; // Exit the loop as soon as a match is found
                 } else {
                     new Alert(Alert.AlertType.WARNING, "Wrong Password").show();

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane fx:id="context" prefHeight="316.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.deathWingIN.edumanage.controller.DashboardFormController">
+   <children>
+      <Label layoutX="28.0" layoutY="24.0" text="Dashboard" textFill="#0145ff">
+         <font>
+            <Font name="System Bold" size="19.0" />
+         </font>
+      </Label>
+      <Separator layoutX="28.0" layoutY="60.0" prefHeight="2.0" prefWidth="545.0" />
+      <Label fx:id="lblDate" layoutX="291.0" layoutY="24.0" text="2024-06-20" textFill="#405d72">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblTime" layoutX="399.0" layoutY="24.0" text="10:20:30" textFill="#405d72">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <Separator layoutX="384.0" layoutY="20.0" orientation="VERTICAL" prefHeight="26.0" prefWidth="6.0" />
+      <Button layoutX="10.0" layoutY="78.0" mnemonicParsing="false" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #424769;" text="Student" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button layoutX="157.0" layoutY="80.0" mnemonicParsing="false" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #7077A1;" text="Programs" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button layoutX="308.0" layoutY="80.0" mnemonicParsing="false" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #607274;" text="Intakes" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button layoutX="458.0" layoutY="78.0" mnemonicParsing="false" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #219C90;" text="Teachers" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button layoutX="10.0" layoutY="216.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="578.0" style="-fx-background-color: #004225;" text="Registration" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Label layoutX="13.0" layoutY="295.0" text="From: DeathWingIN">
+         <font>
+            <Font name="System Bold" size="10.0" />
+         </font>
+      </Label>
+      <Label layoutX="509.0" layoutY="294.0" text="Version: 1.0.0">
+         <font>
+            <Font name="System Bold" size="10.0" />
+         </font>
+      </Label>
+      <Button layoutX="523.0" layoutY="26.0" mnemonicParsing="false" onAction="#logOutOnAction" prefHeight="23.0" prefWidth="55.0" style="-fx-background-color: #D83F31;" text="Logout" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="10.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
