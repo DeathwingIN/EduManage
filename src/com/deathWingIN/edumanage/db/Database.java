@@ -1,5 +1,6 @@
 package com.deathWingIN.edumanage.db;
 
+import com.deathWingIN.edumanage.model.Student;
 import com.deathWingIN.edumanage.model.User;
 import com.deathWingIN.edumanage.util.security.PasswordManager;
 
@@ -9,6 +10,7 @@ public class Database {
 
 
     public static ArrayList<User> UserTable = new ArrayList<>();
+    public static ArrayList<Student> StudentTable = new ArrayList<>();
 
     static {
         UserTable.add(new User(

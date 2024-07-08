@@ -68,4 +68,8 @@ public class DashboardFormController {
         stage.centerOnScreen();
 
     }
+
+    public void openStudentFormOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("StudentForm");
+    }
 }
