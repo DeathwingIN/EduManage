@@ -2,6 +2,7 @@ package com.deathWingIN.edumanage.controller;
 
 import com.deathWingIN.edumanage.db.Database;
 import com.deathWingIN.edumanage.model.User;
+import com.deathWingIN.edumanage.util.security.PasswordManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -33,11 +34,10 @@ public class SignUpFormController {
         String email = txtEmail.getText().trim().toLowerCase();
         String firstName = txtFirstName.getText().toLowerCase();
         String lastName = txtLastName.getText().toLowerCase();
-        String password = txtPassword.getText().trim();
+        String password = new PasswordManager().encrypt(txtPassword.getText().trim());
         Database.UserTable.add(new User(firstName, lastName, email, password));
         new Alert(Alert.AlertType.INFORMATION, "User Registered Successfully").show();
         setUI("LoginForm");
-
 
 
     }

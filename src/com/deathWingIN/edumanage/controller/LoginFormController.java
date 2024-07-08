@@ -2,6 +2,7 @@ package com.deathWingIN.edumanage.controller;
 
 import com.deathWingIN.edumanage.db.Database;
 import com.deathWingIN.edumanage.model.User;
+import com.deathWingIN.edumanage.util.security.PasswordManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -31,7 +32,7 @@ public class LoginFormController {
         for (User user : Database.UserTable) {
             if (user.getEmail().equals(email)) {
                 emailFound = true;
-                if (user.getPassword().equals(password)) {
+                if (new PasswordManager().checkPassword(password, user.getPassword())) {
                     System.out.println(user.toString());
                     break; // Exit the loop as soon as a match is found
                 } else {
