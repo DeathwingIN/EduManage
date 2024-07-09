@@ -30,22 +30,22 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Button>
-      <Button layoutX="157.0" layoutY="80.0" mnemonicParsing="false" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #7077A1;" text="Programs" textFill="WHITE">
+      <Button layoutX="157.0" layoutY="80.0" mnemonicParsing="false" onAction="#openProgramFormOnActiojn" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #7077A1;" text="Programs" textFill="WHITE">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Button>
-      <Button layoutX="308.0" layoutY="80.0" mnemonicParsing="false" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #607274;" text="Intakes" textFill="WHITE">
+      <Button layoutX="308.0" layoutY="80.0" mnemonicParsing="false" onAction="#openIntakeFormOnAction" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #607274;" text="Intakes" textFill="WHITE">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Button>
-      <Button layoutX="458.0" layoutY="78.0" mnemonicParsing="false" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #219C90;" text="Teachers" textFill="WHITE">
+      <Button layoutX="458.0" layoutY="78.0" mnemonicParsing="false" onAction="#openTeacherFormOnAction" prefHeight="112.0" prefWidth="131.0" style="-fx-background-color: #219C90;" text="Teachers" textFill="WHITE">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Button>
-      <Button layoutX="10.0" layoutY="216.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="578.0" style="-fx-background-color: #004225;" text="Registration" textFill="WHITE">
+      <Button layoutX="10.0" layoutY="216.0" mnemonicParsing="false" onAction="#openRegistrationFormOnAction" prefHeight="56.0" prefWidth="578.0" style="-fx-background-color: #004225;" text="Registration" textFill="WHITE">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>

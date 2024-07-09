@@ -72,4 +72,17 @@ public class DashboardFormController {
     public void openStudentFormOnAction(ActionEvent actionEvent) throws IOException {
         setUI("StudentForm");
     }
+
+    public void openProgramFormOnActiojn(ActionEvent actionEvent) {
+    }
+
+    public void openIntakeFormOnAction(ActionEvent actionEvent) {
+    }
+
+    public void openTeacherFormOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("TeacherForm");
+    }
+
+    public void openRegistrationFormOnAction(ActionEvent actionEvent) {
+    }
 }

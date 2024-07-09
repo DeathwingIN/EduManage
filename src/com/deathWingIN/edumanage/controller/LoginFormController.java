@@ -21,7 +21,8 @@ public class LoginFormController {
     public PasswordField txtPassword;
 
 
-    public void forgotPasswordOnAction(ActionEvent actionEvent) {
+    public void forgotPasswordOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("ForgotPasswordForm");
     }
 
     public void loginOnAction(ActionEvent actionEvent) throws IOException {
