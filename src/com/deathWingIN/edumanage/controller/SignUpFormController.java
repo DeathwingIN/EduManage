@@ -13,10 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class SignUpFormController {
 
@@ -76,11 +73,14 @@ public class SignUpFormController {
 
 
         //Write SQL
-        String sql = "INSERT INTO user " +
-                "VALUES ('" + user.getEmail() + "', '" + user.getFirstName() + "', '" + user.getLastName() + "', '" + user.getPassword() + "')";
+        String sql = "INSERT INTO user VALUES (?,?,?,?)";
 
         //create statement
-        Statement statement = connection.createStatement();
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, user.getEmail());
+        statement.setString(2, user.getFirstName());
+        statement.setString(3, user.getLastName());
+        statement.setString(4, user.getPassword());
         //set sql into the statement
         return statement.executeUpdate(sql) > 0;
 
