@@ -8,7 +8,7 @@ public class PasswordManager {
      return BCrypt.hashpw(rowPassword, BCrypt.gensalt(10));
  }
 
- public boolean checkPassword(String rowPassword, String hashPassword) {
+ public static boolean checkPassword(String rowPassword, String hashPassword) {
      return BCrypt.checkpw(rowPassword, hashPassword);
  }
 

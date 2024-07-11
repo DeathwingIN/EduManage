@@ -1,6 +1,7 @@
 package com.deathWingIN.edumanage.controller;
 
 import com.deathWingIN.edumanage.db.Database;
+import com.deathWingIN.edumanage.db.DbConnection;
 import com.deathWingIN.edumanage.model.Student;
 import com.deathWingIN.edumanage.view.tm.StudentTm;
 import javafx.collections.FXCollections;
@@ -15,11 +16,14 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -40,7 +44,7 @@ public class StudentFormController {
     public Button btn;
 
 
-    String searchText="";
+    String searchText = "";
 
     public void initialize() {
 
@@ -86,10 +90,8 @@ public class StudentFormController {
     private void setTableData(String searchText) {
         ObservableList<StudentTm> obList = FXCollections.observableArrayList();
 
-        for (Student st : Database.StudentTable) {
-
-            if (st.getFullName().contains(searchText)) {
-
+        try {
+            for (Student st : searchStudents(searchText)) {
                 Button btn = new Button("Delete");
                 StudentTm tm = new StudentTm(
 
@@ -99,7 +101,6 @@ public class StudentFormController {
                         new SimpleDateFormat("yyyy-MM-dd").format(st.getDateOfBirth()),
                         btn
                 );
-
                 btn.setOnAction(e -> {
                     Alert alert = new Alert(
                             Alert.AlertType.CONFIRMATION,
@@ -109,76 +110,95 @@ public class StudentFormController {
                     );
                     Optional<ButtonType> buttonType = alert.showAndWait();  // this will show the alert and wait for the user to click the button
                     if (buttonType.get().equals(ButtonType.YES)) {
-                        Database.StudentTable.remove(st);
-                        new Alert(Alert.AlertType.CONFIRMATION, "Student Deleted").show();
-                        setTableData(searchText);
+
+
+                        try {
+                            if (deleteStudent(st.getStudentId())) {
+                                new Alert(Alert.AlertType.INFORMATION, "Student Deleted").show();
+                                setTableData(searchText);
+                                setStudentId();
+
+                            } else {
+                                new Alert(Alert.AlertType.ERROR, "Try Again").show();
+                            }
+                        } catch (ClassNotFoundException | SQLException ex) {
+                            new Alert(Alert.AlertType.ERROR, e.toString()).show();
+                        }
+
 
                     }
                 });
 
                 obList.add(tm);
 
+
             }
-
-
-//
+            tbStudent.setItems(obList);
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
 
         }
 
-        tbStudent.setItems(obList);
+
     }
 
     private void setStudentId() {
 
-        if (!Database.StudentTable.isEmpty()) {
-            Student lastStudent = Database.StudentTable.get(Database.StudentTable.size() - 1);
-
-
-            String lastId = lastStudent.getStudentId();
-            String splitData[] = lastId.split("-");
-            String lastIdIntegerNumberAsAString = splitData[1];
-            int lastIntegerIdAsInt = Integer.parseInt(lastIdIntegerNumberAsAString);
-            lastIntegerIdAsInt++;
-            String generatedStudentId = "S-" + lastIntegerIdAsInt;
-            txtId.setText(generatedStudentId);
-
-        } else {
-            txtId.setText("S-1");
+        try {
+            String lastId = getLastId();
+            if (null != lastId) {
+                String splitData[] = lastId.split("-");
+                String lastIdIntegerNumberAsAString = splitData[1];
+                int lastIntegerIdAsInt = Integer.parseInt(lastIdIntegerNumberAsAString);
+                lastIntegerIdAsInt++;
+                String generatedStudentId = "S-" + lastIntegerIdAsInt;
+                txtId.setText(generatedStudentId);
+            } else {
+                txtId.setText("S-1");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
+
 
     }
 
 
     public void saveOnAction(ActionEvent actionEvent) {
-
-
+        Student student = new Student(
+                txtId.getText(),
+                txtName.getText(),
+                Date.from(txtDOB.getValue().atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant()),
+                txtAddress.getText()
+        );
         if (btn.getText().equalsIgnoreCase("Save Student")) {
-            Student student = new Student(
-                    txtId.getText(),
-                    txtName.getText(),
-                    Date.from(txtDOB.getValue().atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant()),
-                    txtAddress.getText()
-            );
-
-            Database.StudentTable.add(student);
-            setStudentId();
-            clear();
-            setTableData(searchText);
-            new Alert(Alert.AlertType.CONFIRMATION, "Student Saved!").show();
-        } else {
-            for (Student st : Database.StudentTable) {
-                if (st.getStudentId().equals(txtId.getText())) {
-                    st.setFullName(txtName.getText());
-                    st.setAddress(txtAddress.getText());
-                    st.setDateOfBirth(Date.from(txtDOB.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
-                    setTableData(searchText);
-                    clear();
+            try {
+                if (saveStudent(student)) {
                     setStudentId();
-                    btn.setText("Save Student");
-                    return;
+                    clear();
+                    setTableData(searchText);
+                    new Alert(Alert.AlertType.CONFIRMATION, "Student Saved!").show();
+                } else {
+                    new Alert(Alert.AlertType.WARNING, "Try Again !").show();
                 }
+            } catch (SQLException | ClassNotFoundException e) {
+                new Alert(Alert.AlertType.ERROR, e.toString()).show();
             }
-            new Alert(Alert.AlertType.ERROR, "Invalid Student ID").show();
+
+        } else {
+
+            try {
+                if (updateStudent(student)) {
+                    clear();
+                    setTableData(searchText);
+                    new Alert(Alert.AlertType.CONFIRMATION, "Student Updated!").show();
+                } else {
+                    new Alert(Alert.AlertType.WARNING, "Try Again !").show();
+                }
+            } catch (SQLException | ClassNotFoundException e) {
+                new Alert(Alert.AlertType.ERROR, e.toString()).show();
+            }
+
         }
     }
 
@@ -211,5 +231,78 @@ public class StudentFormController {
         setUI("DashboardForm");
 
     }
+
+
+    private boolean saveStudent(Student student) throws ClassNotFoundException, SQLException {
+
+        Connection connection = DbConnection.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO student VALUES (?,?,?,?)");
+        preparedStatement.setString(1, student.getStudentId());
+        preparedStatement.setString(2, student.getFullName());
+        preparedStatement.setObject(3, student.getDateOfBirth());
+        preparedStatement.setString(4, student.getAddress());
+        return preparedStatement.executeUpdate() > 0;
+
+    }
+
+
+    private String getLastId() throws ClassNotFoundException, SQLException {
+        Connection connection = DbConnection.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT student_id FROM student ORDER BY CAST(SUBSTRING(student_id,3) AS SIGNED) DESC LIMIT 1");
+
+        ResultSet resultSheet = preparedStatement.executeQuery();
+        if (resultSheet.next()) {
+            return resultSheet.getString(1);
+        }
+        return null;
+    }
+
+
+    private List<Student> searchStudents(String text) throws ClassNotFoundException, SQLException {
+
+        text = "%" + text + "%";
+        Connection connection = DbConnection.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM student WHERE full_name LIKE ? OR address LIKE ? ");
+        preparedStatement.setString(1, text);
+        preparedStatement.setString(2, text);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Student> list = new ArrayList<>();
+
+        while (resultSet.next()) {
+            list.add(new Student(
+                    resultSet.getString(1),
+                    resultSet.getString(2),
+                    resultSet.getDate(3),
+                    resultSet.getString(4)
+            ));
+        }
+        return list;
+
+    }
+
+
+    private boolean deleteStudent(String id) throws ClassNotFoundException, SQLException {
+
+        Connection connection = DbConnection.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM student WHERE student_id=?");
+        preparedStatement.setString(1, id);
+
+        return preparedStatement.executeUpdate() > 0;
+
+    }
+
+    private boolean updateStudent(Student student) throws ClassNotFoundException, SQLException {
+
+        Connection connection = DbConnection.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE student SET full_name=?,dob=?,address=? WHERE student_id=?");
+        preparedStatement.setString(1, student.getFullName());
+        preparedStatement.setObject(2, student.getDateOfBirth());
+        preparedStatement.setString(3, student.getAddress());
+        preparedStatement.setString(4, student.getStudentId());
+        return preparedStatement.executeUpdate() > 0;
+
+    }
+
+
 }
 
