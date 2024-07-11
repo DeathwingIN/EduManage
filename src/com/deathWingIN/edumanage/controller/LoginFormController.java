@@ -1,6 +1,5 @@
 package com.deathWingIN.edumanage.controller;
 
-import com.deathWingIN.edumanage.db.Database;
 import com.deathWingIN.edumanage.model.User;
 import com.deathWingIN.edumanage.util.security.PasswordManager;
 import javafx.event.ActionEvent;
@@ -13,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.*;
 
 public class LoginFormController {
 
@@ -20,47 +20,56 @@ public class LoginFormController {
     public TextField txtEmail;
     public PasswordField txtPassword;
 
+    private Connection getDatabaseConnection() throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "1234");
+    }
 
     public void forgotPasswordOnAction(ActionEvent actionEvent) throws IOException {
         setUI("ForgotPasswordForm");
     }
 
-    public void loginOnAction(ActionEvent actionEvent) throws IOException {
-        String email = txtEmail.getText().trim().toLowerCase();
-        String password = txtPassword.getText().trim();
-        boolean emailFound = false;
-
-        for (User user : Database.UserTable) {
-            if (user.getEmail().equals(email)) {
-                emailFound = true;
-                if (new PasswordManager().checkPassword(password, user.getPassword())) {
-                    setUI("DashboardForm");
-                    break; // Exit the loop as soon as a match is found
-                } else {
-                    new Alert(Alert.AlertType.WARNING, "Wrong Password").show();
-                    return; // Exit the method if the password is wrong
-                }
-            }
-        }
-
-        if (!emailFound) {
-            new Alert(Alert.AlertType.WARNING, "User Not Found").show();
-        }
-    }
-
     public void createAnAccountOnAction(ActionEvent actionEvent) throws IOException {
-
         setUI("SignUpForm");
     }
 
-
     private void setUI(String location) throws IOException {
-
         Stage stage = (Stage) context.getScene().getWindow();
         stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("../view/" + location + ".fxml"))));
         stage.centerOnScreen();
-
     }
 
+    public void loginOnAction(ActionEvent actionEvent) {
+        String email = txtEmail.getText().trim().toLowerCase();
+        String inputPassword = txtPassword.getText().trim();
 
+        try (Connection connection = getDatabaseConnection()) {
+            User user = getUserByEmail(email, connection);
+            if (user != null && new PasswordManager().checkPassword(inputPassword, user.getPassword())) {
+                setUI("DashboardForm");
+            } else {
+                new Alert(Alert.AlertType.WARNING, "Invalid Email or Password").show();
+            }
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Database connection failed: " + e.getMessage()).show();
+        }
+    }
+
+    private User getUserByEmail(String email, Connection connection) throws SQLException {
+        String sql = "SELECT * FROM user WHERE email = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, email);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new User(
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name"),
+                            resultSet.getString("email"),
+                            resultSet.getString(4)
+                    );
+                }
+            }
+        }
+        return null;
+    }
 }
